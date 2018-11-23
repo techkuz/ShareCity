@@ -23,30 +23,35 @@ class AppHeader extends Component {
   render() {
     let menuItems;
     if(this.props.currentUser) {
-      menuItems = [
-        <Menu.Item key="/">
-          <Link to="/">
-            <Icon type="home" className="nav-icon" />
-          </Link>
-        </Menu.Item>,
-        <Menu.Item key="/poll/new">
-          <Link to="/poll/new">
-            <img alt="poll" className="poll-icon" />
-          </Link>
-        </Menu.Item>,
-        <Menu.Item key="/profile" className="profile-menu">
-          <ProfileDropdownMenu
-              currentUser={this.props.currentUser}
-              handleMenuClick={this.handleMenuClick}/>
-        </Menu.Item>
-      ];
+        if(this.props.current === "Personal") {
+            menuItems = [
+                <Menu.Item key="/profile" className="profile-menu">
+                    <ProfileDropdownMenu
+                        currentUser={this.props.currentUser}
+                        handleMenuClick={this.handleMenuClick}/>
+                </Menu.Item>
+            ];
+        } else if (this.props.current === "Business") {
+            menuItems = [
+                <Menu.Item key="/poll/new">
+                    <Link to="/poll/new">
+                        <Icon type="plus-circle" className="nav-icon" />
+                    </Link>
+                </Menu.Item>,
+                <Menu.Item key="/profile" className="profile-menu">
+                    <ProfileDropdownMenu
+                        currentUser={this.props.currentUser}
+                        handleMenuClick={this.handleMenuClick}/>
+                </Menu.Item>
+            ];
+        }
     } else {
       menuItems = [
         <Menu.Item key="/login">
-          <Link to="/login">Login</Link>
+            {(this.props.current === "Personal") ? (<Link to="/login">Login</Link>) : (<Link to="/business/login">Login</Link>)}
         </Menu.Item>,
         <Menu.Item key="/signup">
-          <Link to="/signup">Signup</Link>
+            {(this.props.current === "Personal") ? (<Link to="/signup">Signup</Link>) : (<Link to="/business/signup">Signup</Link>)}
         </Menu.Item>
       ];
     }

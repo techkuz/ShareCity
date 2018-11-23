@@ -1,25 +1,33 @@
 import React, { Component } from 'react';
 import './App.css';
 import {
-  Route,
-  withRouter,
-  Switch
+    Route,
+    withRouter,
+    Switch
 } from 'react-router-dom';
+
+import { store } from '../index';
 
 import { getCurrentUser} from '../util/APIUtils';
 import { ACCESS_TOKEN } from '../constants';
 
 import PollList from '../poll/PollList';
 import NewPoll from '../poll/NewPoll';
+import NewRequest from '../request/NewRequest';
 import Login from '../user/login/Login';
 import Signup from '../user/signup/Signup';
+import LoginBusiness from '../business/login/LoginBusiness';
+import SignupBusiness from '../business/signup/SignupBusiness';
 import Profile from '../user/profile/Profile';
 import AppHeader from '../common/AppHeader';
+import AppFooter from '../common/AppFooter';
 import NotFound from '../common/NotFound';
+import HomePage from "../home/HomePage";
 import LoadingIndicator from '../common/LoadingIndicator';
 import PrivateRoute from '../common/PrivateRoute';
 
 import { Layout, notification } from 'antd';
+
 const { Content } = Layout;
 
 class App extends Component {
@@ -29,7 +37,7 @@ class App extends Component {
             currentUser: null,
             isAuthenticated: false,
             isLoading: false
-        }
+        };
         this.handleLogout = this.handleLogout.bind(this);
         this.loadCurrentUser = this.loadCurrentUser.bind(this);
         this.handleLogin = this.handleLogin.bind(this);
@@ -41,11 +49,11 @@ class App extends Component {
         });
     }
 
-    loadCurrentUser() {
+    async loadCurrentUser() {
         this.setState({
             isLoading: true
         });
-        getCurrentUser()
+        await getCurrentUser()
             .then(response => {
                 this.setState({
                     currentUser: response,
@@ -53,10 +61,10 @@ class App extends Component {
                     isLoading: false
                 });
             }).catch(error => {
-            this.setState({
-                isLoading: false
+                this.setState({
+                    isLoading: false
+                });
             });
-        });
     }
 
     componentDidMount() {
@@ -85,13 +93,19 @@ class App extends Component {
      so that we can load the logged-in user details and set the currentUser &
      isAuthenticated state, which other components will use to render their JSX
     */
-    handleLogin() {
+    async handleLogin() {
         notification.success({
             message: 'Polling App',
             description: "You're successfully logged in.",
         });
-        this.loadCurrentUser();
-        this.props.history.push("/");
+        await this.loadCurrentUser().then(() => {
+            console.log(this.state.currentUser);
+            if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_BUSINESS') {
+                this.props.history.push("/business/polls");
+            } else if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_USER') {
+                this.props.history.push(`/users/${this.state.currentUser.username}`);
+            }
+        });
     }
 
     render() {
@@ -107,7 +121,9 @@ class App extends Component {
                 <Content className="app-content">
                     <div className="container">
                         <Switch>
-                            <Route exact path="/"
+                            <Route exact path="/" component={HomePage}>
+                            </Route>
+                            <Route path="/business/polls"
                                    render={(props) => <PollList isAuthenticated={this.state.isAuthenticated}
                                                                 currentUser={this.state.currentUser} handleLogout={this.handleLogout} {...props} />}>
                             </Route>
@@ -116,16 +132,26 @@ class App extends Component {
                             </Route>
                             <Route path="/signup" component={Signup}>
                             </Route>
+                            <Route path="/test" component={NewRequest}>
+                            </Route>
+                            <Route path="/business/login"
+                                   render={(props) => <LoginBusiness onLogin={this.handleLogin} {...props} />}>
+                            </Route>
+                            <Route path="/business/signup" component={SignupBusiness}>
+                            </Route>
                             <Route path="/users/:username"
                                    render={(props) => <Profile isAuthenticated={this.state.isAuthenticated} currentUser={this.state.currentUser} {...props}  />}>
                             </Route>
                             <PrivateRoute authenticated={this.state.isAuthenticated} path="/poll/new" component={NewPoll} handleLogout={this.handleLogout}>
+                            </PrivateRoute>
+                            <PrivateRoute authenticated={this.state.isAuthenticated} path="/request/new" component={NewRequest} handleLogout={this.handleLogout}>
                             </PrivateRoute>
                             <Route component={NotFound}>
                             </Route>
                         </Switch>
                     </div>
                 </Content>
+                <AppFooter />
             </Layout>
         );
     }
