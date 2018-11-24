@@ -3,17 +3,37 @@ import io.bytom.common.*;
 import io.bytom.http.*;
 import io.bytom.exception.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
+import java.util.*;
+import java.io.*;
+import java.net.*;
+import java.nio.charset.*;
+
+import org.apache.commons.codec.binary.Base64;
+
+import org.json.*;
 
 class Main {
   public static void main(String[] argv) {
     System.out.println("Generating client");
     try {
-      testTransfering();
-    } catch (BytomException e) {
+      /*
+      processTransaction(
+            Configuration.getValue("security.mainxpub"),
+            Configuration.getValue("main.id"),
+            Configuration.getValue("main.program"),
+            Configuration.getValue("escrow.receiver.program"),
+            Configuration.getValue("escrow.receiver.address"),
+            10000
+        );
+  public static void unlockContract(String sender, String receiverProgram, long amount, long fee) throws Exception {
+        */
+      unlockContract(
+            Configuration.getValue("escrow.sender.id"),
+            Configuration.getValue("escrow.receiver.program"),
+            10000,
+            1000000
+          );
+    } catch (Exception e) {
       e.printStackTrace();
     }
     System.out.println("Exiting");
@@ -30,12 +50,205 @@ class Main {
     String fromAcc = Configuration.getValue("escrow.sender.id");
     String toAddress = Configuration.getValue("escrow.receiver.address");
     String assetId = Configuration.getValue("asset.sct.id");
-    int amount = 10000000;
-    int gasAmount = 100000000;
+    long amount = 10000000;
+    long gasAmount = 100000000;
     transferAsset(client, fromAcc, toAddress, assetId, amount, gasAmount);
   }
 
-  public static void transferAsset(Client client, String from, String to, String assetId, int amount, int gasAmount) throws BytomException {
+  public static void processTransaction(String agent, String senderAccount, String senderProgram, String receiverProgram, String receiverAddress, long amount) throws Exception {
+      String program = compileContract(agent, senderProgram, receiverProgram);
+      lockContract(program, senderAccount, receiverAddress, amount, amount * 100);
+  }
+
+  public static void lockContract(String program, String sender, String reciever, long amount, long fee) throws Exception {
+    URL url = new URL("http://localhost:9888/build-transaction");
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod("POST");
+    connection.setRequestProperty("Content-Type", "application/json");
+    connection.setRequestProperty ("Authorization", getAuth());
+
+    StringBuilder builder = new StringBuilder();
+    builder.append("{\n");
+    builder.append("\"base_transaction\":null,\n");
+    builder.append("\"ttl\":10000,\n");
+    builder.append("\"actions\": [\n");
+
+    builder.append("{");
+    builder.append("\"account_id\":\"" + sender + "\",\n");
+    builder.append("\"amount\":" + fee + ",\n");
+    builder.append("\"asset_id\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\n");
+    builder.append("\"type\":\"spend_account\"\n");
+    builder.append("},\n");
+
+    builder.append("{");
+    builder.append("\"account_id\":\"" + sender + "\",\n");
+    builder.append("\"amount\":" + amount + ",\n");
+    builder.append("\"asset_id\":\"" + Configuration.getValue("asset.sct.id") + "\",\n");
+    builder.append("\"type\":\"spend_account\"\n");
+    builder.append("},\n");
+
+    builder.append("{");
+    builder.append("\"control_program\":\"" + program + "\",\n");
+    builder.append("\"amount\":" + amount + ",\n");
+    builder.append("\"asset_id\":\"" + Configuration.getValue("asset.sct.id") + "\",\n");
+    builder.append("\"type\":\"control_program\"\n");
+    builder.append("}\n");
+
+    builder.append("]\n");
+    builder.append("}\n");
+
+    connection.setUseCaches(false);
+    connection.setDoOutput(true);
+
+    try (OutputStream output = connection.getOutputStream()) {
+      output.write(builder.toString().getBytes());
+    }
+
+    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+    String inputLine;
+    StringBuilder responseBuilder = new StringBuilder();
+    while ((inputLine = in.readLine()) != null) {
+      responseBuilder.append(inputLine);
+    }
+    in.close();
+    System.out.println(responseBuilder.toString());
+
+    JSONObject obj = new JSONObject(responseBuilder.toString());
+    Client client = Client.generateClient();
+    Transaction.Template transaction = Utils.serializer.fromJson(obj.getJSONObject("data").toString(), Transaction.Template.class);
+    Transaction.Template signer = new Transaction.SignerBuilder().sign(client, transaction, Configuration.getValue("security.password"));
+    Transaction.SubmitResponse txs = Transaction.submit(client, signer);
+  }
+
+  public static void unlockContract(String sender, String receiverProgram, long amount, long fee) throws Exception {
+    Client client = Client.generateClient();
+    String sourceId = "";
+    List<UnspentOutput> list = new UnspentOutput.QueryBuilder().list(client);
+    for (UnspentOutput output : list) {
+      if (output.assetId.equals(Configuration.getValue("asset.sct.id"))) {
+        sourceId = output.id;
+        amount = output.amount;
+        break;
+      }
+    }
+    if (sourceId.equals("")) {
+      return;
+    }
+
+    URL url = new URL("http://localhost:9888/build-transaction");
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod("POST");
+    connection.setRequestProperty("Content-Type", "application/json");
+    connection.setRequestProperty ("Authorization", getAuth());
+
+    StringBuilder builder = new StringBuilder();
+    builder.append("{\n");
+    builder.append("\"base_transaction\":null,\n");
+    builder.append("\"ttl\":10000,\n");
+    builder.append("\"actions\": [\n");
+
+    builder.append("{");
+    builder.append("\"type\":\"spend_account_unspent_output\",\n");
+
+      builder.append("\"output_id\":\"" + sourceId + "\",\n");
+      builder.append("\"arguments\": [\n");
+      builder.append("{");
+      builder.append("\"type\":\"raw_tx_signature\",\n");
+      builder.append("\"raw_data\": { \"xpub\":\"" + Configuration.getValue("security.mainxpub") + "\", \"derivation_path\": [\"010100000000000000\",\"0100000000000000\"] } \n");
+      builder.append("},\n");
+      builder.append("{");
+      builder.append("\"type\":\"data\",\n");
+      builder.append("\"raw_data\": { \"value\":\"00000000\" } \n");
+      builder.append("}\n");
+      builder.append("]\n");
+
+    builder.append("},\n");
+
+    builder.append("{");
+    builder.append("\"control_program\":\"" + receiverProgram + "\",\n");
+    builder.append("\"amount\":" + amount + ",\n");
+    builder.append("\"asset_id\":\"" + Configuration.getValue("asset.sct.id") + "\",\n");
+    builder.append("\"type\":\"control_program\"\n");
+    builder.append("},\n");
+
+    builder.append("{");
+    builder.append("\"account_id\":\"" + sender + "\",\n");
+    builder.append("\"amount\":" + fee + ",\n");
+    builder.append("\"asset_id\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\n");
+    builder.append("\"type\":\"spend_account\"\n");
+    builder.append("}\n");
+
+    builder.append("]\n");
+    builder.append("}\n");
+
+    connection.setUseCaches(false);
+    connection.setDoOutput(true);
+
+    try (OutputStream output = connection.getOutputStream()) {
+      output.write(builder.toString().getBytes());
+    }
+
+    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+    String inputLine;
+    StringBuilder responseBuilder = new StringBuilder();
+    while ((inputLine = in.readLine()) != null) {
+      responseBuilder.append(inputLine);
+    }
+    in.close();
+
+    JSONObject obj = new JSONObject(responseBuilder.toString());
+    Transaction.Template transaction = Utils.serializer.fromJson(obj.getJSONObject("data").toString(), Transaction.Template.class);
+    Transaction.Template signer = new Transaction.SignerBuilder().sign(client, transaction, Configuration.getValue("security.password"));
+    Transaction.SubmitResponse txs = Transaction.submit(client, signer);
+  }
+
+  public static String compileContract(String agent, String sender, String recipient) throws Exception {
+    URL url = new URL("http://localhost:9888/compile");
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod("POST");
+    connection.setRequestProperty("Content-Type", "application/json");
+
+    StringBuilder builder = new StringBuilder();
+    builder.append("{\n");
+    builder.append("\"contract\": \"contract Escrow(agent: PublicKey,sender: Program,recipient: Program) locks valueAmount of valueAsset {clause approve(sig: Signature) {verify checkTxSig(agent, sig)lock valueAmount of valueAsset with recipient}clause reject(sig: Signature) {verify checkTxSig(agent, sig)lock valueAmount of valueAsset with sender}} \",\n");
+    builder.append("\"args\": [\n");
+
+    builder.append("{\"string\": \"");
+    builder.append(agent);
+    builder.append("\"},\n");
+
+    builder.append("{\"string\": \"");
+    builder.append(sender);
+    builder.append("\"},\n");
+
+    builder.append("{\"string\": \"");
+    builder.append(recipient);
+    builder.append("\"}\n");
+
+    builder.append("]\n");
+    builder.append("}\n");
+
+    connection.setUseCaches(false);
+    connection.setDoOutput(true);
+
+    try (OutputStream output = connection.getOutputStream()) {
+      output.write(builder.toString().getBytes());
+    }
+
+    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+    String inputLine;
+    StringBuilder responseBuilder = new StringBuilder();
+    while ((inputLine = in.readLine()) != null) {
+      responseBuilder.append(inputLine);
+    }
+    in.close();
+
+    JSONObject obj = new JSONObject(responseBuilder.toString());
+    String result = obj.getJSONObject("data").getString("program");
+    return result;
+  }
+
+  public static void transferAsset(Client client, String from, String to, String assetId, long amount, long gasAmount) throws BytomException {
     Transaction.Template transaction = new Transaction.Builder()
       .addAction(new Transaction.Action.SpendFromAccount()
                       .setAccountId(from)
@@ -98,5 +311,11 @@ class Main {
       coreURL = "http://127.0.0.1:9888/";
     }
     return new Client(coreURL, accessToken);
+  }
+
+  public static String getAuth() {
+    byte[] encodedAuth = Base64.encodeBase64(Configuration.getValue("client.access.token").getBytes(Charset.forName("US-ASCII")));
+    String auth = "Basic " + new String(encodedAuth);
+    return auth;
   }
 }
