@@ -2,6 +2,7 @@ package com.hack.junction.sharecity.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hack.junction.sharecity.model.AppUser;
+import com.hack.junction.sharecity.model.Role;
 import com.hack.junction.sharecity.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,6 +35,9 @@ public class UserPrincipal implements UserDetails {
     @JsonIgnore
     private String password;
 
+    @JsonIgnore
+    private Role role;
+
     private Collection<? extends GrantedAuthority> authorities;
 
     public static UserPrincipal create(AppUser user ) {
@@ -47,6 +51,7 @@ public class UserPrincipal implements UserDetails {
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
+                user.getRoles().iterator().next(),
                 authorities
         );
     }
