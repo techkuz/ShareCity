@@ -41,14 +41,14 @@
     The spring boot app uses role based authorization powered by spring security. Please execute the following sql queries in the database to insert the `USER` and `ADMIN` roles.
     
     ```sql
-    INSERT INTO bytom_app.roles (name) VALUES ('ROLE_USER');
-    INSERT INTO bytom_app.roles (name) VALUES ('ROLE_ADMIN');
-    INSERT INTO bytom_app.roles (name) VALUES ('ROLE_BUSINESS');
-    INSERT INTO bytom_app.roles (name) VALUES ('ROLE_STARTUP');
-    INSERT INTO bytom_app.roles (name) VALUES ('ROLE_CORPORATE');
+    INSERT INTO roles (name) VALUES ('ROLE_STARTUP');
+    INSERT INTO roles (name) VALUES ('ROLE_ADMIN');
+    INSERT INTO roles (name) VALUES ('ROLE_CORPORATE');
+    INSERT INTO roles (name) VALUES ('ROLE_STARTUP');
+    INSERT INTO roles (name) VALUES ('ROLE_CORPORATE');
     ```
      
-     Any new user who signs up to the app is assigned the `ROLE_USER` by default.
+     Any new user who signs up to the app is assigned the `ROLE_STARTUP` by default.
      
 
 ## Steps to Setup the React Front-end app

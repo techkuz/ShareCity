@@ -27,6 +27,7 @@ import LoadingIndicator from '../common/LoadingIndicator';
 import PrivateRoute from '../common/PrivateRoute';
 
 import { Layout, notification } from 'antd';
+import Request from "../request/Request";
 
 const { Content } = Layout;
 
@@ -99,10 +100,10 @@ class App extends Component {
             description: "You're successfully logged in.",
         });
         await this.loadCurrentUser().then(() => {
-        // if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_BUSINESS') {
-        if (this.state.currentUser && true) {
+        console.log(this.state.currentUser);
+        if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_CORPORATE') {
             this.props.history.push("/business/polls");
-        } else if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_USER') {
+        } else if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_STARTUP') {
             this.props.history.push(`/users/${this.state.currentUser.username}`);
         }
         });

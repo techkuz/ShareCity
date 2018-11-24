@@ -30,7 +30,8 @@ class AppHeader extends Component {
     let menuItems;
     let accountItems;
     if(this.props.currentUser) {
-        if(this.props.currentUser.roleName === "ROLE_USER") {
+        console.log(this.props.currentUser.roleName);
+        if(this.props.currentUser.roleName === "ROLE_STARTUP") {
             menuItems = [
                 <Menu.Item selectable="false" className="profile-menu">
                     <span>{(this.props.currentUser.account) ? this.props.currentUser.account : '0.00'} BTM</span>
@@ -41,7 +42,7 @@ class AppHeader extends Component {
                         handleMenuClick={this.handleMenuClick}/>
                 </Menu.Item>
             ];
-        } else if (this.props.current.roleName === "ROLE_BUSINESS") {
+        } else if (this.props.currentUser.roleName === "ROLE_CORPORATE") {
             menuItems = [
                 <Menu.Item key="/poll/new">
                     <Link to="/poll/new">

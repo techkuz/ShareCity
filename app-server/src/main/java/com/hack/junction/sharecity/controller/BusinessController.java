@@ -34,7 +34,7 @@ public class BusinessController {
     @GetMapping("/business/me")
     @PreAuthorize("hasRole('BUSINESS')")
     public UserSummary getCurrentUser(@CurrentUser UserPrincipal currentUser) {
-        UserSummary userSummary = new UserSummary(currentUser.getId(), currentUser.getUsername(), currentUser.getName(), RoleName.ROLE_BUSINESS.name());
+        UserSummary userSummary = new UserSummary(currentUser.getId(), currentUser.getUsername(), currentUser.getName(), RoleName.ROLE_CORPORATE.name());
         return userSummary;
     }
 
@@ -57,7 +57,7 @@ public class BusinessController {
 
         long pollCount = pollRepository.countByCreatedBy(user.getId());
 
-        BusinessProfile businessProfile = new BusinessProfile(user.getId(), user.getUsername(), user.getName(), user.getCreatedAt(), pollCount, RoleName.ROLE_BUSINESS.name());
+        BusinessProfile businessProfile = new BusinessProfile(user.getId(), user.getUsername(), user.getName(), user.getCreatedAt(), pollCount, RoleName.ROLE_CORPORATE.name());
 
         return businessProfile;
     }
