@@ -46,7 +46,7 @@ public class PollController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('BUSINESS')")
+    @PreAuthorize("hasRole('ROLE_CORPORATE')")
     public ResponseEntity<?> createPoll(@Valid @RequestBody PollRequest pollRequest) {
         Poll poll = pollService.createPoll(pollRequest);
 
@@ -65,7 +65,7 @@ public class PollController {
     }
 
     @PostMapping("/{pollId}/votes")
-    @PreAuthorize("hasRole('BUSINESS')")
+    @PreAuthorize("hasRole('ROLE_CORPORATE')")
     public PollResponse castVote(@CurrentUser UserPrincipal currentUser,
                                  @PathVariable Long pollId,
                                  @Valid @RequestBody VoteRequest voteRequest) {
