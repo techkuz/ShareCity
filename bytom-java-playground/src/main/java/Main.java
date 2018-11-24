@@ -12,17 +12,27 @@ class Main {
   public static void main(String[] argv) {
     System.out.println("Generating client");
     try {
-      Client client = Client.generateClient();
-      String fromAcc = Configuration.getValue("escrow.sender.id");
-      String toAddress = Configuration.getValue("escrow.receiver.address");
-      String assetId = Configuration.getValue("asset.sct.id");
-      int amount = 100;
-      int gasAmount = 10000000;
-      transferAsset(client, fromAcc, toAddress, assetId, amount, gasAmount);
+      testUserCreating();
     } catch (BytomException e) {
       e.printStackTrace();
     }
     System.out.println("Exiting");
+  }
+
+  public static void testUserCreating() throws BytomException {
+    Client client = Client.generateClient();
+    Map<String, String> res = createNewKeyAndUser(client, "test3", "qwerty");
+    System.out.println(res.toString());
+  }
+
+  public static void testTransfering() throws BytomException {
+    Client client = Client.generateClient();
+    String fromAcc = Configuration.getValue("escrow.sender.id");
+    String toAddress = Configuration.getValue("escrow.receiver.address");
+    String assetId = Configuration.getValue("asset.sct.id");
+    int amount = 100;
+    int gasAmount = 10000000;
+    transferAsset(client, fromAcc, toAddress, assetId, amount, gasAmount);
   }
 
   public static void transferAsset(Client client, String from, String to, String assetId, int amount, int gasAmount) throws BytomException {
@@ -50,7 +60,6 @@ class Main {
     Key.Builder keyBuilder = new Key.Builder().setAlias(alias).setPassword(password);
     Key key = Key.create(client, keyBuilder);
     result.put("xpub", key.xpub);
-    result.put("mnemonic", key.xpub);
 
     List<String> rootXpubs = new ArrayList<>();
     rootXpubs.add(key.xpub);
