@@ -1,0 +1,12 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+repositories {
+    mavenCentral()
+}
+
+mainClassName = "Main"
+
+dependencies {
+  compile 'io.bytom:bytom-sdk:1.0.0'
+}
