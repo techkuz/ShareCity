@@ -4,9 +4,15 @@ import {
   withRouter
 } from 'react-router-dom';
 import './AppHeader.css';
+import logo from './bytom.svg'
 
 import { Layout, Menu, Dropdown, Icon } from 'antd';
+import { connect } from "react-redux";
+import { changeCurrent } from "../actions";
+
+
 const Header = Layout.Header;
+
 
 class AppHeader extends Component {
   constructor(props) {
@@ -22,45 +28,69 @@ class AppHeader extends Component {
 
   render() {
     let menuItems;
+    let accountItems;
     if(this.props.currentUser) {
-      menuItems = [
-        <Menu.Item key="/">
-          <Link to="/">
-            <Icon type="home" className="nav-icon" />
-          </Link>
-        </Menu.Item>,
-        <Menu.Item key="/poll/new">
-          <Link to="/poll/new">
-            <img alt="poll" className="poll-icon" />
-          </Link>
-        </Menu.Item>,
-        <Menu.Item key="/profile" className="profile-menu">
-          <ProfileDropdownMenu
-              currentUser={this.props.currentUser}
-              handleMenuClick={this.handleMenuClick}/>
-        </Menu.Item>
-      ];
+        if(this.props.currentUser.roleName === "ROLE_USER") {
+            menuItems = [
+                <Menu.Item key="/profile" className="profile-menu">
+                    <ProfileDropdownMenu
+                        currentUser={this.props.currentUser}
+                        handleMenuClick={this.handleMenuClick}/>
+                </Menu.Item>
+            ];
+        } else if (this.props.current.roleName === "ROLE_BUSINESS") {
+            menuItems = [
+                <Menu.Item key="/poll/new">
+                    <Link to="/poll/new">
+                        <Icon type="plus-circle" className="nav-icon" />
+                    </Link>
+                </Menu.Item>,
+                <Menu.Item key="/profile" className="profile-menu">
+                    <ProfileDropdownMenu
+                        currentUser={this.props.currentUser}
+                        handleMenuClick={this.handleMenuClick}/>
+                </Menu.Item>
+            ];
+        }
     } else {
       menuItems = [
         <Menu.Item key="/login">
-          <Link to="/login">Login</Link>
+            {(this.props.current === "Personal") ? (<Link to="/login">Login</Link>) : (<Link to="/business/login">Login</Link>)}
         </Menu.Item>,
         <Menu.Item key="/signup">
-          <Link to="/signup">Signup</Link>
+            {(this.props.current === "Personal") ? (<Link to="/signup">Signup</Link>) : (<Link to="/business/signup">Signup</Link>)}
         </Menu.Item>
+      ];
+      accountItems = [
+          <Menu.Item key="Personal" onClick={() => this.props.makeCurrent("Personal")}>
+              <Link to="/">Personal</Link>
+          </Menu.Item>,
+          <Menu.Item key="Business" onClick={() => this.props.makeCurrent("Business")}>
+              <Link to="/">Business</Link>
+          </Menu.Item>
       ];
     }
 
     return (
         <Header className="app-header">
           <div className="container">
-            <div className="app-title" >
-              <Link to="/">Polling App</Link>
+            <div className="app-title">
+              <Link to="/">SHARE<span id='span-logo'>city</span></Link>
+              <a className="bytom" href="https://bytom.io/" target="_blank" >
+                  <img src={logo} alt="Bytom" width="12" height="12"/>
+              </a>
             </div>
             <Menu
-                className="app-menu"
+                className="app-menu app-menu-left"
                 mode="horizontal"
-                selectedKeys={[this.props.location.pathname]}
+                selectedKeys={[this.props.current]}
+                style={{ lineHeight: '64px' }} >
+                {accountItems}
+            </Menu>
+            <Menu
+                className="app-menu app-menu-right"
+                mode="horizontal"
+                selectedKeys={[this.props.current]}
                 style={{ lineHeight: '64px' }} >
               {menuItems}
             </Menu>
@@ -103,4 +133,15 @@ function ProfileDropdownMenu(props) {
   );
 }
 
-export default withRouter(AppHeader);
+const mapStateToProps = (state) => ({
+    current: state.current
+});
+
+const mapDispatchToProps = dispatch => ({
+    makeCurrent: current => dispatch(changeCurrent(current))
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(withRouter(AppHeader))

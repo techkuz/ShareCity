@@ -8,10 +8,27 @@
     line-height: 64px;
     font-size: 21px;
     display: inline-block;
+    letter-spacing: 3px;
+    color: #8B4B62;
+}
+
+.app-title a #span-logo{
+    font-size: 16px;
+    letter-spacing: initial;
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.ant-menu-horizontal {
+    border-bottom: none;
 }
 
 .app-title a:hover {
     text-decoration: none;
+}
+
+.app-title a.bytom {
+    vertical-align: top;
+    line-height: initial;
 }
 
 .app-header {
@@ -22,7 +39,11 @@
     padding: 0;
 }
 
-.app-menu {
+.app-menu-left {
+    float: left;
+}
+
+.app-menu-right {
     float: right;
 }
 

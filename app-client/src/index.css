@@ -4,6 +4,10 @@ body {
   font-family: sans-serif;
 }
 
+body > div{
+  color: initial;
+}
+
 .container {
   max-width: 1000px;
   margin-left: auto;

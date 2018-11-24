@@ -5,7 +5,7 @@ import { Avatar, Tabs } from 'antd';
 import { getAvatarColor } from '../../util/Colors';
 import { formatDate } from '../../util/Helpers';
 import LoadingIndicator  from '../../common/LoadingIndicator';
-import './Profile.css';
+import './ProfileBusiness.js.css';
 import NotFound from '../../common/NotFound';
 import ServerError from '../../common/ServerError';
 import { store }from '../../index';
@@ -100,10 +100,12 @@ class Profile extends Component {
                           tabBarStyle={tabBarStyle}
                           size="large"
                           className="profile-tabs">
-                        {this.state.user && this.state.user.roleName === 'ROLE_USER' ? (
-                            <TabPane tab={`${this.state.user.voteCount} Votes`}  key="1">
-                                <PollList username={this.props.match.params.username} type="USER_VOTED_POLLS" />
+
+                      {this.state.user && this.state.user.roleName === 'ROLE_BUSINESS' ? (
+                            <TabPane tab={`${this.state.user.pollCount} Polls`} key="1">
+                            <PollList username={this.props.match.params.username} type="USER_CREATED_POLLS" />
                             </TabPane>) : null}
+
                     </Tabs>
                   </div>
                 </div>
