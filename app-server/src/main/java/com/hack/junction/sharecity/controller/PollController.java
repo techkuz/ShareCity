@@ -65,7 +65,7 @@ public class PollController {
     }
 
     @PostMapping("/{pollId}/votes")
-    @PreAuthorize("hasRole('ROLE_CORPORATE')")
+    @PreAuthorize("hasRole('ROLE_STARTUP')")
     public PollResponse castVote(@CurrentUser UserPrincipal currentUser,
                                  @PathVariable Long pollId,
                                  @Valid @RequestBody VoteRequest voteRequest) {

@@ -7,6 +7,7 @@ import com.hack.junction.sharecity.payload.PagedResponse;
 import com.hack.junction.sharecity.payload.PollRequest;
 import com.hack.junction.sharecity.payload.PollResponse;
 import com.hack.junction.sharecity.payload.VoteRequest;
+import com.hack.junction.sharecity.repository.AppUserRepository;
 import com.hack.junction.sharecity.repository.PollRepository;
 import com.hack.junction.sharecity.repository.UserRepository;
 import com.hack.junction.sharecity.repository.VoteRepository;
@@ -43,6 +44,9 @@ public class PollService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AppUserRepository appUserRepository;
+
     private static final Logger logger = LoggerFactory.getLogger(PollService.class);
 
     public PagedResponse<PollResponse> getAllPolls(UserPrincipal currentUser, int page, int size) {
@@ -61,7 +65,7 @@ public class PollService {
         List<Long> pollIds = polls.map(Poll::getId).getContent();
         Map<Long, Long> choiceVoteCountMap = getChoiceVoteCountMap(pollIds);
         Map<Long, Long> pollUserVoteMap = getPollUserVoteMap(currentUser, pollIds);
-        Map<Long, User> creatorMap = getPollCreatorMap(polls.getContent());
+        Map<Long, AppUser> creatorMap = getPollCreatorMap(polls.getContent());
 
         List<PollResponse> pollResponses = polls.map(poll -> {
             return ModelMapper.mapPollToPollResponse(poll,
@@ -77,7 +81,7 @@ public class PollService {
     public PagedResponse<PollResponse> getPollsCreatedBy(String username, UserPrincipal currentUser, int page, int size) {
         validatePageNumberAndSize(page, size);
 
-        User user = userRepository.findByUsername(username)
+        AppUser user = appUserRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
         // Retrieve all polls created by the given username
@@ -130,7 +134,7 @@ public class PollService {
         // Map Polls to PollResponses containing vote counts and poll creator details
         Map<Long, Long> choiceVoteCountMap = getChoiceVoteCountMap(pollIds);
         Map<Long, Long> pollUserVoteMap = getPollUserVoteMap(currentUser, pollIds);
-        Map<Long, User> creatorMap = getPollCreatorMap(polls);
+        Map<Long, AppUser> creatorMap = getPollCreatorMap(polls);
 
         List<PollResponse> pollResponses = polls.stream().map(poll -> {
             return ModelMapper.mapPollToPollResponse(poll,
@@ -171,7 +175,7 @@ public class PollService {
                 .collect(Collectors.toMap(ChoiceVoteCount::getChoiceId, ChoiceVoteCount::getVoteCount));
 
         // Retrieve poll creator details
-        User creator = userRepository.findById(poll.getCreatedBy())
+        AppUser creator = appUserRepository.findById(poll.getCreatedBy())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", poll.getCreatedBy()));
 
         // Retrieve vote done by logged in user
@@ -220,7 +224,7 @@ public class PollService {
                 .collect(Collectors.toMap(ChoiceVoteCount::getChoiceId, ChoiceVoteCount::getVoteCount));
 
         // Retrieve poll creator details
-        User creator = userRepository.findById(poll.getCreatedBy())
+        AppUser creator = appUserRepository.findById(poll.getCreatedBy())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", poll.getCreatedBy()));
 
         return ModelMapper.mapPollToPollResponse(poll, choiceVotesMap, creator, vote.getChoice().getId());
@@ -259,16 +263,16 @@ public class PollService {
         return pollUserVoteMap;
     }
 
-    Map<Long, User> getPollCreatorMap(List<Poll> polls) {
+    Map<Long, AppUser> getPollCreatorMap(List<Poll> polls) {
         // Get Poll Creator details of the given list of polls
         List<Long> creatorIds = polls.stream()
                 .map(Poll::getCreatedBy)
                 .distinct()
                 .collect(Collectors.toList());
 
-        List<User> creators = userRepository.findByIdIn(creatorIds);
-        Map<Long, User> creatorMap = creators.stream()
-                .collect(Collectors.toMap(User::getId, Function.identity()));
+        List<AppUser> creators = appUserRepository.findByIdIn(creatorIds);
+        Map<Long, AppUser> creatorMap = creators.stream()
+                .collect(Collectors.toMap(AppUser::getId, Function.identity()));
 
         return creatorMap;
     }

@@ -1,5 +1,6 @@
 package com.hack.junction.sharecity.util;
 
+import com.hack.junction.sharecity.model.AppUser;
 import com.hack.junction.sharecity.model.Poll;
 import com.hack.junction.sharecity.model.Role;
 import com.hack.junction.sharecity.model.User;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class ModelMapper {
 
-    public static PollResponse mapPollToPollResponse(Poll poll, Map<Long, Long> choiceVotesMap, User creator, Long userVote) {
+    public static PollResponse mapPollToPollResponse(Poll poll, Map<Long, Long> choiceVotesMap, AppUser creator, Long userVote) {
         PollResponse pollResponse = new PollResponse();
         pollResponse.setId(poll.getId());
         pollResponse.setQuestion(poll.getQuestion());
