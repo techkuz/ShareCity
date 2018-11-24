@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import { login } from '../../util/APIUtils';
-import './LoginBusiness.css';
+import './LoginCorporation.css';
 import { Link } from 'react-router-dom';
 import { ACCESS_TOKEN } from '../../constants';
 
 import { Form, Input, Button, Icon, notification } from 'antd';
 const FormItem = Form.Item;
 
-class LoginBusiness extends Component {
+class LoginCorporation extends Component {
   render() {
     const AntWrappedLoginForm = Form.create()(LoginForm)
     return (
         <div className="login-container">
-          <h1 className="page-title">Login Business</h1>
+          <h1 className="page-title">Login Corporation</h1>
           <div className="login-content">
             <AntWrappedLoginForm onLogin={this.props.onLogin} />
           </div>
@@ -35,17 +35,16 @@ class LoginForm extends Component {
         login(loginRequest)
             .then(response => {
               localStorage.setItem(ACCESS_TOKEN, response.accessToken);
-              console.log(response);
               this.props.onLogin();
             }).catch(error => {
           if(error.status === 401) {
             notification.error({
-              message: 'Polling App',
+              message: 'SHARE city',
               description: 'Your Username or Password is incorrect. Please try again!'
             });
           } else {
             notification.error({
-              message: 'Polling App',
+              message: 'SHARE city',
               description: error.message || 'Sorry! Something went wrong. Please try again!'
             });
           }
@@ -91,4 +90,4 @@ class LoginForm extends Component {
 }
 
 
-export default LoginBusiness;
+export default LoginCorporation;

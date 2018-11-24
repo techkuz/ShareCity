@@ -16,8 +16,8 @@ import NewPoll from '../poll/NewPoll';
 import NewRequest from '../request/NewRequest';
 import Login from '../user/login/Login';
 import Signup from '../user/signup/Signup';
-import LoginBusiness from '../business/login/LoginBusiness';
-import SignupBusiness from '../business/signup/SignupBusiness';
+import LoginCorporation from '../business/login/LoginCorporation';
+import SignupCorporation from '../business/signup/SignupCorporation';
 import Profile from '../user/profile/Profile';
 import AppHeader from '../common/AppHeader';
 import AppFooter from '../common/AppFooter';
@@ -83,7 +83,7 @@ class App extends Component {
         this.props.history.push(redirectTo);
 
         notification[notificationType]({
-            message: 'Polling App',
+            message: 'SHARE city',
             description: description,
         });
     }
@@ -95,7 +95,7 @@ class App extends Component {
     */
     async handleLogin() {
         notification.success({
-            message: 'Polling App',
+            message: 'SHARE city',
             description: "You're successfully logged in.",
         });
         await this.loadCurrentUser().then(() => {
@@ -134,9 +134,9 @@ class App extends Component {
                             <Route path="/test" component={NewRequest}>
                             </Route>
                             <Route path="/business/login"
-                                   render={(props) => <LoginBusiness onLogin={this.handleLogin} {...props} />}>
+                                   render={(props) => <LoginCorporation onLogin={this.handleLogin} {...props} />}>
                             </Route>
-                            <Route path="/business/signup" component={SignupBusiness}>
+                            <Route path="/business/signup" component={SignupCorporation}>
                             </Route>
                             <Route path="/users/:username"
                                    render={(props) => <Profile isAuthenticated={this.state.isAuthenticated} currentUser={this.state.currentUser} {...props}  />}>

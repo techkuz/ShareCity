@@ -32,6 +32,9 @@ class AppHeader extends Component {
     if(this.props.currentUser) {
         if(this.props.currentUser.roleName === "ROLE_USER") {
             menuItems = [
+                <Menu.Item selectable="false" className="profile-menu">
+                    <span>{(this.props.currentUser.account) ? this.props.currentUser.account : '0.00'} BTM</span>
+                </Menu.Item>,
                 <Menu.Item key="/profile" className="profile-menu">
                     <ProfileDropdownMenu
                         currentUser={this.props.currentUser}
@@ -55,18 +58,18 @@ class AppHeader extends Component {
     } else {
       menuItems = [
         <Menu.Item key="/login">
-            {(this.props.current === "Personal") ? (<Link to="/login">Login</Link>) : (<Link to="/business/login">Login</Link>)}
+            {(this.props.current === "Startup") ? (<Link to="/login">Login</Link>) : (<Link to="/business/login">Login</Link>)}
         </Menu.Item>,
         <Menu.Item key="/signup">
-            {(this.props.current === "Personal") ? (<Link to="/signup">Signup</Link>) : (<Link to="/business/signup">Signup</Link>)}
+            {(this.props.current === "Startup") ? (<Link to="/signup">Signup</Link>) : (<Link to="/business/signup">Signup</Link>)}
         </Menu.Item>
       ];
       accountItems = [
-          <Menu.Item key="Personal" onClick={() => this.props.makeCurrent("Personal")}>
-              <Link to="/">Personal</Link>
+          <Menu.Item key="Startup" onClick={() => this.props.makeCurrent("Startup")}>
+              <Link to="/">Startup</Link>
           </Menu.Item>,
-          <Menu.Item key="Business" onClick={() => this.props.makeCurrent("Business")}>
-              <Link to="/">Business</Link>
+          <Menu.Item key="Corporation" onClick={() => this.props.makeCurrent("Corporation")}>
+              <Link to="/">Corporation</Link>
           </Menu.Item>
       ];
     }
@@ -107,9 +110,9 @@ function ProfileDropdownMenu(props) {
           <div className="user-full-name-info">
             {props.currentUser.name}
           </div>
-          <div className="username-info">
-            @{props.currentUser.username}
-          </div>
+          {/*<div className="username-info">*/}
+            {/*@{props.currentUser.username}*/}
+          {/*</div>*/}
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key="profile" className="dropdown-item">

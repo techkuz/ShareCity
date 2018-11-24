@@ -108,7 +108,7 @@ class PollList extends Component {
     if(!this.props.isAuthenticated) {
       this.props.history.push("/login");
       notification.info({
-        message: 'Polling App',
+        message: 'SHARE city',
         description: "Please login to vote.",
       });
       return;
@@ -134,7 +134,7 @@ class PollList extends Component {
         this.props.handleLogout('/login', 'error', 'You have been logged out. Please login to vote');
       } else {
         notification.error({
-          message: 'Polling App',
+          message: 'SHARE city',
           description: error.message || 'Sorry! Something went wrong. Please try again!'
         });
       }

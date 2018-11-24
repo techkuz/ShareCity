@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { signup, checkUsernameAvailability, checkEmailAvailability } from '../../util/APIUtils';
-import './SignupBusiness.css';
+import './SignupCorporation.css';
 import { Link } from 'react-router-dom';
 import {
   NAME_MIN_LENGTH, NAME_MAX_LENGTH,
@@ -12,7 +12,7 @@ import {
 import { Form, Input, Button, notification } from 'antd';
 const FormItem = Form.Item;
 
-class SignupBusiness extends Component {
+class SignupCorporation extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -56,18 +56,19 @@ class SignupBusiness extends Component {
       name: this.state.name.value,
       email: this.state.email.value,
       username: this.state.username.value,
-      password: this.state.password.value
+      password: this.state.password.value,
+      isBusiness: true
     };
     signup(signupRequest)
         .then(response => {
           notification.success({
-            message: 'Polling App',
+            message: 'SHARE city',
             description: "Thank you! You're successfully registered. Please Login to continue!",
           });
           this.props.history.push("/login");
         }).catch(error => {
       notification.error({
-        message: 'Polling App',
+        message: 'SHARE city',
         description: error.message || 'Sorry! Something went wrong. Please try again!'
       });
     });
@@ -84,7 +85,7 @@ class SignupBusiness extends Component {
   render() {
     return (
         <div className="signup-container">
-          <h1 className="page-title">Sign Up For Business</h1>
+          <h1 className="page-title">Sign Up For Corporation</h1>
           <div className="signup-content">
             <Form onSubmit={this.handleSubmit} className="signup-form">
               <FormItem
@@ -352,4 +353,4 @@ class SignupBusiness extends Component {
 
 }
 
-export default SignupBusiness;
+export default SignupCorporation;

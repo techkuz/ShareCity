@@ -52,7 +52,7 @@ class NewRequest extends Component {
                 this.props.handleLogout('/login', 'error', 'You have been logged out. Please login create poll.');
             } else {
                 notification.error({
-                    message: 'Polling App',
+                    message: 'SHARE city',
                     description: error.message || 'Sorry! Something went wrong. Please try again!'
                 });
             }
