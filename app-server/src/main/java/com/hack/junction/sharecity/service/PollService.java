@@ -112,7 +112,7 @@ public class PollService {
     public PagedResponse<PollResponse> getPollsVotedBy(String username, UserPrincipal currentUser, int page, int size) {
         validatePageNumberAndSize(page, size);
 
-        User user = userRepository.findByUsername(username)
+        AppUser user = appUserRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
         // Retrieve all pollIds in which the given username has voted
@@ -196,7 +196,7 @@ public class PollService {
             throw new BadRequestException("Sorry! This Poll has already expired");
         }
 
-        User user = userRepository.getOne(currentUser.getId());
+        AppUser user = appUserRepository.getOne(currentUser.getId());
 
         Choice selectedChoice = poll.getChoices().stream()
                 .filter(choice -> choice.getId().equals(voteRequest.getChoiceId()))

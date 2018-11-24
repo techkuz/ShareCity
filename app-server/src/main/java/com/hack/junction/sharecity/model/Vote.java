@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Table(name = "votes", uniqueConstraints = {
         @UniqueConstraint(columnNames = {
                 "poll_id",
-                "user_id"
+                "appuser_id"
         })
 })
 public class Vote extends DateAudit {
@@ -27,6 +27,6 @@ public class Vote extends DateAudit {
     private Choice choice;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "appuser_id", nullable = false)
+    private AppUser user;
 }
