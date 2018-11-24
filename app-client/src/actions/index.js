@@ -12,7 +12,7 @@ export function changeCurrent(current) {
 
 export const FETCH_BUSINESS = 'FETCH_BUSINESS';
 
-export function fetchBusiness(props) {
+export function fetchCorporation(props) {
     const request = axios.post(`${API_BASE_URL}/business/`, props);
 
     return {
