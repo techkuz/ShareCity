@@ -1,3 +1,5 @@
+package com.hack.junction.sharecity.util;
+
 import io.bytom.api.*;
 import io.bytom.exception.*;
 import io.bytom.http.*;
@@ -5,7 +7,7 @@ import io.bytom.common.*;
 
 import java.util.*;
 
-class BytomUtil {
+public class BytomUtil {
   public static Map<String, String> createNewKeyAndUser(String alias, String password) throws BytomException {
     Client client = Client.generateClient();
     Map<String, String> result = new HashMap<>();

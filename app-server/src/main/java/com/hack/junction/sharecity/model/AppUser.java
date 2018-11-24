@@ -20,8 +20,15 @@ public class AppUser {
     private Long id;
 
     @NotBlank
+    private String bytomId;
+
+    @NotBlank
     @Size(max = 40)
     private String name;
+
+    @NotBlank
+    @Size(max = 20)
+    private String username;
 
     @NaturalId
     @NotBlank
@@ -32,6 +39,8 @@ public class AppUser {
     @NotBlank
     @Size(max = 100)
     private String password;
+
+    private Double balance;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "appuser_roles",
@@ -63,5 +72,13 @@ public class AppUser {
 
     public AppUser() {}
 
+    public AppUser(String bytomId, String name, String username, String email, String password, Double balance) {
+        this.bytomId = bytomId;
+        this.name = name;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.balance = balance;
+    }
 
 }

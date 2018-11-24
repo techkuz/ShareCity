@@ -1,9 +1,12 @@
 package com.hack.junction.sharecity.controller;
 
 import com.hack.junction.sharecity.exception.ResourceNotFoundException;
+import com.hack.junction.sharecity.model.AppUser;
 import com.hack.junction.sharecity.model.User;
 import com.hack.junction.sharecity.model.RoleName;
 import com.hack.junction.sharecity.payload.*;
+import com.hack.junction.sharecity.payload.test.AppUserProfile;
+import com.hack.junction.sharecity.repository.AppUserRepository;
 import com.hack.junction.sharecity.repository.PollRepository;
 import com.hack.junction.sharecity.repository.UserRepository;
 import com.hack.junction.sharecity.repository.VoteRepository;
@@ -24,6 +27,9 @@ public class UserController {
     private UserRepository userRepository;
 
     @Autowired
+    private AppUserRepository appUserRepository;
+
+    @Autowired
     private VoteRepository voteRepository;
 
     @Autowired
@@ -32,32 +38,35 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/user/me")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('STARTUP')")
     public UserSummary getCurrentUser(@CurrentUser UserPrincipal currentUser) {
-        UserSummary userSummary = new UserSummary(currentUser.getId(), currentUser.getUsername(), currentUser.getName(), RoleName.ROLE_USER.name());
+        UserSummary userSummary = new UserSummary(currentUser.getId(), currentUser.getUsername(), currentUser.getName(),
+                RoleName.ROLE_STARTUP.name());
         return userSummary;
     }
 
     @GetMapping("/user/checkUsernameAvailability")
     public UserIdentityAvailability checkUsernameAvailability(@RequestParam(value = "username") String username) {
-        Boolean isAvailable = !userRepository.existsByUsername(username);
+        Boolean isAvailable = !appUserRepository.existsByUsername(username);
         return new UserIdentityAvailability(isAvailable);
     }
 
     @GetMapping("/user/checkEmailAvailability")
     public UserIdentityAvailability checkEmailAvailability(@RequestParam(value = "email") String email) {
-        Boolean isAvailable = !userRepository.existsByEmail(email);
+        Boolean isAvailable = !appUserRepository.existsByEmail(email);
         return new UserIdentityAvailability(isAvailable);
     }
 
     @GetMapping("/users/{username}")
-    public UserProfile getUserProfile(@PathVariable(value = "username") String username) {
-        User user = userRepository.findByUsername(username)
+    public AppUserProfile getUserProfile(@PathVariable(value = "username") String username) {
+        AppUser user = appUserRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
         long voteCount = voteRepository.countByUserId(user.getId());
 
-        UserProfile userProfile = new UserProfile(user.getId(), user.getUsername(), user.getName(), user.getCreatedAt(), voteCount, RoleName.ROLE_USER.name());
+        AppUserProfile userProfile = new AppUserProfile(user.getId(), user.getBytomId(), user.getUsername(), user.getName(),
+                user.getBalance(), user.getShortDescription(),
+                user.getDescription(), user.getFounded(), user.getWebsite(), user.getCity(), user.getCountry());
 
         return userProfile;
     }

@@ -9,7 +9,10 @@ import java.util.Date;
 @AllArgsConstructor
 public class AppUserProfile {
     private Long id;
+    private String bytomId;
+    private String username;
     private String name;
+    private Double balance;
     private String shortDescription;
     private String description;
     private Date founded;
