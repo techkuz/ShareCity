@@ -5,13 +5,12 @@ import { Avatar, Tabs } from 'antd';
 import { getAvatarColor } from '../../util/Colors';
 import { formatDate } from '../../util/Helpers';
 import LoadingIndicator  from '../../common/LoadingIndicator';
-import './ProfileBusiness.js.css';
+import './ProfileCorporation.js.css';
 import NotFound from '../../common/NotFound';
 import ServerError from '../../common/ServerError';
-import { store }from '../../index';
 const TabPane = Tabs.TabPane;
 
-class Profile extends Component {
+class ProfileCorporation extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -102,7 +101,7 @@ class Profile extends Component {
                           className="profile-tabs">
 
                       {this.state.user && this.state.user.roleName === 'ROLE_BUSINESS' ? (
-                            <TabPane tab={`${this.state.user.pollCount} Polls`} key="1">
+                            <TabPane tab={`${this.state.user.pollCount} Requests`} key="1">
                             <PollList username={this.props.match.params.username} type="USER_CREATED_POLLS" />
                             </TabPane>) : null}
 
@@ -116,4 +115,4 @@ class Profile extends Component {
   }
 }
 
-export default Profile;
+export default ProfileCorporation;

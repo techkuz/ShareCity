@@ -12,7 +12,7 @@ class Login extends Component {
     const AntWrappedLoginForm = Form.create()(LoginForm)
     return (
         <div className="login-container">
-          <h1 className="page-title">Login</h1>
+          <h1 className="page-title">Login Startup</h1>
           <div className="login-content">
             <AntWrappedLoginForm onLogin={this.props.onLogin} />
           </div>
@@ -39,12 +39,12 @@ class LoginForm extends Component {
             }).catch(error => {
           if(error.status === 401) {
             notification.error({
-              message: 'Polling App',
+              message: 'SHARE city',
               description: 'Your Username or Password is incorrect. Please try again!'
             });
           } else {
             notification.error({
-              message: 'Polling App',
+              message: 'SHARE city',
               description: error.message || 'Sorry! Something went wrong. Please try again!'
             });
           }
