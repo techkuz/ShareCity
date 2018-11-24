@@ -6,7 +6,8 @@ import io.bytom.common.*;
 import java.util.*;
 
 class BytomUtil {
-  public static Map<String, String> createNewKeyAndUser(Client client, String alias, String password) throws BytomException {
+  public static Map<String, String> createNewKeyAndUser(String alias, String password) throws BytomException {
+    Client client = Client.generateClient();
     Map<String, String> result = new HashMap<>();
     Key.Builder keyBuilder = new Key.Builder().setAlias(alias).setPassword(password);
     Key key = Key.create(client, keyBuilder);
