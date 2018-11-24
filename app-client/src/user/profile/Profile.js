@@ -100,12 +100,8 @@ class Profile extends Component {
                           tabBarStyle={tabBarStyle}
                           size="large"
                           className="profile-tabs">
-                        {store.getState().current === "Business" ? (
-                            <TabPane tab={`${this.state.user.pollCount} Polls`} key="1">
-                            <PollList username={this.props.match.params.username} type="USER_CREATED_POLLS" />
-                            </TabPane>) : null}
-                        {store.getState().current === "Personal" ? (
-                            <TabPane tab={`${this.state.user.voteCount} Votes`}  key="2">
+                        {this.state.user && this.state.user.roleName === 'ROLE_USER' ? (
+                            <TabPane tab={`${this.state.user.voteCount} Votes`}  key="1">
                                 <PollList username={this.props.match.params.username} type="USER_VOTED_POLLS" />
                             </TabPane>) : null}
                     </Tabs>

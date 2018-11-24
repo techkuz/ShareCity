@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
 import {
-    Route,
-    withRouter,
-    Switch
+  Route,
+  withRouter,
+  Switch
 } from 'react-router-dom';
 
 import { store } from '../index';
@@ -61,10 +61,10 @@ class App extends Component {
                     isLoading: false
                 });
             }).catch(error => {
-                this.setState({
-                    isLoading: false
-                });
+            this.setState({
+                isLoading: false
             });
+        });
     }
 
     componentDidMount() {
@@ -99,12 +99,11 @@ class App extends Component {
             description: "You're successfully logged in.",
         });
         await this.loadCurrentUser().then(() => {
-            console.log(this.state.currentUser);
-            if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_BUSINESS') {
-                this.props.history.push("/business/polls");
-            } else if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_USER') {
-                this.props.history.push(`/users/${this.state.currentUser.username}`);
-            }
+        if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_BUSINESS') {
+            this.props.history.push("/business/polls");
+        } else if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_USER') {
+            this.props.history.push(`/users/${this.state.currentUser.username}`);
+        }
         });
     }
 
