@@ -9,4 +9,6 @@ mainClassName = "Main"
 
 dependencies {
   compile 'io.bytom:bytom-sdk:1.0.0'
+  compile group: 'org.json', name: 'json', version: '20180813'
+  compile group: 'org.apache.directory.studio', name: 'org.apache.commons.codec', version: '1.8'
 }
