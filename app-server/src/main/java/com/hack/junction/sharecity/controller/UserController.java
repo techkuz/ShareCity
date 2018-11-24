@@ -65,8 +65,8 @@ public class UserController {
         long voteCount = voteRepository.countByUserId(user.getId());
 
         AppUserProfile userProfile = new AppUserProfile(user.getId(), user.getBytomId(), user.getUsername(), user.getName(),
-                user.getBalance(), user.getShortDescription(),
-                user.getDescription(), user.getFounded(), user.getWebsite(), user.getCity(), user.getCountry());
+                user.getBalance(), user.getShortDescription(), user.getDescription(), user.getFounded(),
+                user.getWebsite(), user.getCity(), user.getCountry(), user.getRoles().iterator().next().getName().name());
 
         return userProfile;
     }

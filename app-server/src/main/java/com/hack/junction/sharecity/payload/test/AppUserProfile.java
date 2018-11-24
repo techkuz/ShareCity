@@ -19,4 +19,5 @@ public class AppUserProfile {
     private String website;
     private String city;
     private String country;
+    private String roleName;
 }
