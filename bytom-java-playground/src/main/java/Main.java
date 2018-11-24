@@ -12,7 +12,7 @@ class Main {
   public static void main(String[] argv) {
     System.out.println("Generating client");
     try {
-      testUserCreating();
+      testTransfering();
     } catch (BytomException e) {
       e.printStackTrace();
     }
@@ -30,8 +30,8 @@ class Main {
     String fromAcc = Configuration.getValue("escrow.sender.id");
     String toAddress = Configuration.getValue("escrow.receiver.address");
     String assetId = Configuration.getValue("asset.sct.id");
-    int amount = 100;
-    int gasAmount = 10000000;
+    int amount = 10000000;
+    int gasAmount = 100000000;
     transferAsset(client, fromAcc, toAddress, assetId, amount, gasAmount);
   }
 
@@ -49,6 +49,7 @@ class Main {
                       .setAccountId(from)
                       .setAssetId(Configuration.getValue("asset.btm.id"))
                       .setAmount(gasAmount))
+      .setTtl(1000)
       .build(client);
 
     Transaction.Template signer = new Transaction.SignerBuilder().sign(client, transaction, Configuration.getValue("security.password"));
