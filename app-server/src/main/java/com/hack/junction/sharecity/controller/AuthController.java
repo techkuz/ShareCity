@@ -97,14 +97,14 @@ public class AuthController {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        Role userRole = roleRepository.findByName(signUpRequest.getIsBusiness() ? RoleName.ROLE_CORPORATE : RoleName.ROLE_STARTUP)
+        Role userRole = roleRepository.findByName(signUpRequest.isBusiness() ? RoleName.ROLE_CORPORATE : RoleName.ROLE_STARTUP)
                 .orElseThrow(() -> new AppException("User Role not set."));
 
         user.setRoles(Collections.singleton(userRole));
 
         AppUser result = appUserRepository.save(user);
 
-        String apiRoleRoute = signUpRequest.getIsBusiness() ? "corporate" : "startup";
+        String apiRoleRoute = signUpRequest.isBusiness() ? "corporate" : "startup";
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/api/" + apiRoleRoute + "/{username}")

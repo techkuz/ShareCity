@@ -27,4 +27,8 @@ public class SignUpRequest {
 
     @NotBlank
     private Boolean isBusiness;
+
+    public Boolean isBusiness() {
+        return isBusiness;
+    }
 }
