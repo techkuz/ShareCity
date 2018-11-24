@@ -56,7 +56,8 @@ class Signup extends Component {
       name: this.state.name.value,
       email: this.state.email.value,
       username: this.state.username.value,
-      password: this.state.password.value
+      password: this.state.password.value,
+      isBusiness: false
     };
     signup(signupRequest)
         .then(response => {

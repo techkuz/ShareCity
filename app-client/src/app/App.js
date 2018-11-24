@@ -99,7 +99,8 @@ class App extends Component {
             description: "You're successfully logged in.",
         });
         await this.loadCurrentUser().then(() => {
-        if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_BUSINESS') {
+        // if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_BUSINESS') {
+        if (this.state.currentUser && true) {
             this.props.history.push("/business/polls");
         } else if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_USER') {
             this.props.history.push(`/users/${this.state.currentUser.username}`);

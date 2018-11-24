@@ -164,7 +164,7 @@ class Profile extends Component {
                           size="large"
                           className="profile-tabs">
                         {this.state.user && this.state.user.roleName === 'ROLE_USER' ? (
-                            <TabPane tab={`${this.state.user.voteCount} Votes`}  key="1">
+                            <TabPane tab={`${this.state.user.voteCount} Shares`}  key="1">
                                 <PollList username={this.props.match.params.username} type="USER_VOTED_POLLS" />
                             </TabPane>) : null}
                     </Tabs>

@@ -59,6 +59,8 @@ class SignupCorporation extends Component {
       password: this.state.password.value,
       isBusiness: true
     };
+
+
     signup(signupRequest)
         .then(response => {
           notification.success({

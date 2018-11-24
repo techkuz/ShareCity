@@ -30,16 +30,18 @@ class NewRequest extends Component {
         this.handleChangeFields = this.handleChangeFields.bind(this);
     }
 
-    handleChangeFields(value) {
-        console.log(value);
-    }
+    handleChangeFields(choices) {
+        this.setState({
+            choices
+        });
 
+    }
     handleSubmit(event) {
         event.preventDefault();
         const pollData = {
             question: this.state.question.text,
             choices: this.state.choices.map(choice => {
-                return {text: choice.text}
+                return {text: choice}
             }),
             pollLength: this.state.pollLength
         };
@@ -167,8 +169,8 @@ class NewRequest extends Component {
                         </FormItem>
                         <FieldsChoice handleChangeFields={this.handleChangeFields}/>
                         <FormItem className="poll-form-row">
-                            <Col xs={24} sm={4}>
-                                Poll length:
+                            <Col xs={24} sm={6}>
+                                Request length:
                             </Col>
                             <Col xs={24} sm={20}>
                                 <span style={{marginRight: '18px'}}>
@@ -220,9 +222,10 @@ class FieldsChoice extends React.Component {
     constructor(props) {
         super(props);
         this.children = [];
-        for (let i = 0; i < 5; i++) {
-            this.children.push(<Option key={i}>{i}</Option>);
-        }
+        this.children.push(<Option key={'city'}>city</Option>);
+        this.children.push(<Option key={'country'}>country</Option>);
+        this.children.push(<Option key={'founded'}>founded</Option>);
+
     }
 
     render() {
