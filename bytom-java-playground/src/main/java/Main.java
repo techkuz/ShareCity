@@ -16,23 +16,14 @@ class Main {
   public static void main(String[] argv) {
     System.out.println("Generating client");
     try {
-      /*
       processTransaction(
             Configuration.getValue("security.mainxpub"),
-            Configuration.getValue("main.id"),
-            Configuration.getValue("main.program"),
+            Configuration.getValue("escrow.sender.id"),
+            Configuration.getValue("escrow.sender.program"),
             Configuration.getValue("escrow.receiver.program"),
             Configuration.getValue("escrow.receiver.address"),
             10000
         );
-  public static void unlockContract(String sender, String receiverProgram, long amount, long fee) throws Exception {
-        */
-      unlockContract(
-            Configuration.getValue("escrow.sender.id"),
-            Configuration.getValue("escrow.receiver.program"),
-            10000,
-            1000000
-          );
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -58,6 +49,7 @@ class Main {
   public static void processTransaction(String agent, String senderAccount, String senderProgram, String receiverProgram, String receiverAddress, long amount) throws Exception {
       String program = compileContract(agent, senderProgram, receiverProgram);
       lockContract(program, senderAccount, receiverAddress, amount, amount * 100);
+      unlockContract(senderAccount, receiverProgram, amount, amount * 100);
   }
 
   public static void lockContract(String program, String sender, String reciever, long amount, long fee) throws Exception {
