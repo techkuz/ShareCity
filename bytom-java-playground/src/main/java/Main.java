@@ -48,11 +48,13 @@ class Main {
 
   public static void processTransaction(String agent, String senderAccount, String senderProgram, String receiverProgram, String receiverAddress, long amount) throws Exception {
       String program = compileContract(agent, senderProgram, receiverProgram);
-      lockContract(program, senderAccount, receiverAddress, amount, amount * 100);
-      unlockContract(senderAccount, receiverProgram, amount, amount * 100);
+      String txid = lockContract(program, senderAccount, receiverAddress, amount, amount * 100);
+      java.util.concurrent.TimeUnit.MINUTES.sleep(3);
+      System.out.println("TXID: " + txid);
+      unlockContract(txid, senderAccount, receiverProgram, amount, amount * 100);
   }
 
-  public static void lockContract(String program, String sender, String reciever, long amount, long fee) throws Exception {
+  public static String lockContract(String program, String sender, String reciever, long amount, long fee) throws Exception {
     URL url = new URL("http://localhost:9888/build-transaction");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("POST");
@@ -62,7 +64,7 @@ class Main {
     StringBuilder builder = new StringBuilder();
     builder.append("{\n");
     builder.append("\"base_transaction\":null,\n");
-    builder.append("\"ttl\":10000,\n");
+    builder.append("\"ttl\":90000,\n");
     builder.append("\"actions\": [\n");
 
     builder.append("{");
@@ -110,24 +112,24 @@ class Main {
     Transaction.Template transaction = Utils.serializer.fromJson(obj.getJSONObject("data").toString(), Transaction.Template.class);
     Transaction.Template signer = new Transaction.SignerBuilder().sign(client, transaction, Configuration.getValue("security.password"));
     Transaction.SubmitResponse txs = Transaction.submit(client, signer);
+    return txs.tx_id;
   }
 
-  public static void unlockContract(String sender, String receiverProgram, long amount, long fee) throws Exception {
+  public static void unlockContract(String txid, String sender, String receiverProgram, long amount, long fee) throws Exception {
     Client client = Client.generateClient();
-    String sourceId = "";
-    List<UnspentOutput> list = new UnspentOutput.QueryBuilder().list(client);
-    for (UnspentOutput output : list) {
-      if (output.assetId.equals(Configuration.getValue("asset.sct.id"))) {
-        sourceId = output.id;
-        amount = output.amount;
-        break;
+    String outputId = "";
+    Transaction trans = new Transaction.QueryBuilder().setTxId(txid).get(client);
+    for (Transaction.Output output : trans.outputs) {
+      if (output.address == null || output.address.isEmpty()) {
+        outputId = output.id;
       }
     }
-    if (sourceId.equals("")) {
+    if (outputId.equals("")) {
       return;
     }
+    System.out.println("Output ID: " + outputId);
 
-    URL url = new URL("http://localhost:9888/build-transaction");
+    URL url = new URL("http://localhost:9888/list-unspent-outputs");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("POST");
     connection.setRequestProperty("Content-Type", "application/json");
@@ -135,29 +137,63 @@ class Main {
 
     StringBuilder builder = new StringBuilder();
     builder.append("{\n");
+    builder.append("\"smart_contract\":true,\n");
+    builder.append("\"id\":\"" + outputId + "\"\n");
+    builder.append("}\n");
+
+    connection.setUseCaches(false);
+    connection.setDoOutput(true);
+
+    try (OutputStream output = connection.getOutputStream()) {
+      output.write(builder.toString().getBytes());
+    }
+
+    System.out.println(builder.toString());
+
+    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+    String inputLine;
+    StringBuilder responseBuilder = new StringBuilder();
+    while ((inputLine = in.readLine()) != null) {
+      responseBuilder.append(inputLine);
+    }
+    in.close();
+    System.out.println(responseBuilder.toString());
+
+    JSONObject obj = new JSONObject(responseBuilder.toString());
+ 
+    String sourceId = obj.getJSONArray("data").getJSONObject(0).getString("source_id");
+
+    url = new URL("http://localhost:9888/build-transaction");
+    connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod("POST");
+    connection.setRequestProperty("Content-Type", "application/json");
+    connection.setRequestProperty ("Authorization", getAuth());
+
+    builder = new StringBuilder();
+    builder.append("{\n");
     builder.append("\"base_transaction\":null,\n");
-    builder.append("\"ttl\":10000,\n");
+    builder.append("\"ttl\":90000,\n");
     builder.append("\"actions\": [\n");
 
     builder.append("{");
     builder.append("\"type\":\"spend_account_unspent_output\",\n");
 
-      builder.append("\"output_id\":\"" + sourceId + "\",\n");
+      builder.append("\"output_id\":\"" + outputId + "\",\n");
       builder.append("\"arguments\": [\n");
       builder.append("{");
       builder.append("\"type\":\"raw_tx_signature\",\n");
-      builder.append("\"raw_data\": { \"xpub\":\"" + Configuration.getValue("security.mainxpub") + "\", \"derivation_path\": [\"010100000000000000\",\"0100000000000000\"] } \n");
+      builder.append("\"raw_data\": { \"xpub\":\"" + Configuration.getValue("escrow.agent.xpub") + "\", \"derivation_path\": [\"010100000000000000\",\"0100000000000000\"] } \n");
       builder.append("},\n");
       builder.append("{");
-      builder.append("\"type\":\"data\",\n");
-      builder.append("\"raw_data\": { \"value\":\"00000000\" } \n");
+      builder.append("\"type\":\"integer\",\n");
+      builder.append("\"raw_data\": { \"value\":0 } \n");
       builder.append("}\n");
       builder.append("]\n");
 
     builder.append("},\n");
 
     builder.append("{");
-    builder.append("\"control_program\":\"" + receiverProgram + "\",\n");
+    builder.append("\"control_program\":\"" + sourceId + "\",\n");
     builder.append("\"amount\":" + amount + ",\n");
     builder.append("\"asset_id\":\"" + Configuration.getValue("asset.sct.id") + "\",\n");
     builder.append("\"type\":\"control_program\"\n");
@@ -165,7 +201,8 @@ class Main {
 
     builder.append("{");
     builder.append("\"account_id\":\"" + sender + "\",\n");
-    builder.append("\"amount\":" + fee + ",\n");
+    // builder.append("\"amount\":" + fee + ",\n");
+    builder.append("\"amount\":" + 40000000 + ",\n");
     builder.append("\"asset_id\":\"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\",\n");
     builder.append("\"type\":\"spend_account\"\n");
     builder.append("}\n");
@@ -180,15 +217,15 @@ class Main {
       output.write(builder.toString().getBytes());
     }
 
-    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-    String inputLine;
-    StringBuilder responseBuilder = new StringBuilder();
+    in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+    responseBuilder = new StringBuilder();
     while ((inputLine = in.readLine()) != null) {
       responseBuilder.append(inputLine);
     }
     in.close();
+    System.out.println(responseBuilder.toString());
 
-    JSONObject obj = new JSONObject(responseBuilder.toString());
+    obj = new JSONObject(responseBuilder.toString());
     Transaction.Template transaction = Utils.serializer.fromJson(obj.getJSONObject("data").toString(), Transaction.Template.class);
     Transaction.Template signer = new Transaction.SignerBuilder().sign(client, transaction, Configuration.getValue("security.password"));
     Transaction.SubmitResponse txs = Transaction.submit(client, signer);
