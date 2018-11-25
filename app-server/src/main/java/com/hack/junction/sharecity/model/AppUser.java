@@ -13,7 +13,14 @@ import java.util.Set;
 
 @Data
 @Entity
-@Table(name = "appusers")
+@Table(name = "appusers", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {
+                "username"
+        }),
+        @UniqueConstraint(columnNames = {
+                "email"
+        })
+})
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
