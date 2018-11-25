@@ -113,7 +113,6 @@ class PollList extends Component {
       });
       return;
     }
-
     const poll = this.state.polls[pollIndex];
     const selectedChoice = this.state.currentVotes[pollIndex];
 
@@ -158,7 +157,7 @@ class PollList extends Component {
           {
             !this.state.isLoading && this.state.polls.length === 0 ? (
                 <div className="no-polls-found">
-                  <span>No Polls Found.</span>
+                  <span>No Requests Found.</span>
                 </div>
             ): null
           }

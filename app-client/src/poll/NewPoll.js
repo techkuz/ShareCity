@@ -191,8 +191,8 @@ class NewPoll extends Component {
                 </Button>
               </FormItem>
               <FormItem className="poll-form-row">
-                <Col xs={24} sm={4}>
-                  Poll length:
+                <Col xs={24} sm={8}>
+                  Request duration:
                 </Col>
                 <Col xs={24} sm={20}>
                                 <span style = {{ marginRight: '18px' }}>

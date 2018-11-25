@@ -110,7 +110,7 @@ class Poll extends Component {
               !(this.props.poll.selectedChoice || this.props.poll.expired) ?
                   (<Button className="vote-button" disabled={!this.props.currentVote} onClick={this.props.handleVoteSubmit}>Share</Button>) : null
             }
-            <span className="total-votes">{this.props.poll.totalVotes} votes</span>
+            <span className="total-shares">{this.props.poll.totalVotes} shares</span>
             <span className="separator">•</span>
             <span className="time-left">
                         {
