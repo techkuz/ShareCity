@@ -1,4 +1,4 @@
-export const INFO = {
+export const st = {
     "type": "startup",
     "id": "4646512986423296",
     "name": "Taival Advisory Oy",
@@ -19,3 +19,38 @@ export const INFO = {
     ],
     "bytom_id": "0LJK40TQ00A02"
 };
+
+
+export const co = {
+    "type": "corporate",
+    "id": "5183058219106304",
+    "name": "Ncrypted Technologies Oy",
+    "shortDescription": "Software Products, Solutions, Consultancy and Advisory",
+    "description": "NCrypted is a startup enabler and provides ready-to-go products and innovative solutions to startups and small-to-medium scale businesses in 90+ countries.",
+    "website": "https://www.ncrypted.com",
+    "city": "Helsinki",
+    "country": "Finland",
+    "logo": {
+        "id": "5165166324875264",
+        "imageServiceUrl": "https://lh3.googleusercontent.com/q4UzXspjozI57VSPUnt09Fe7jAjjWX9sX3tDyVj5DauW8R86UOYLpmuZMdKQUmLKXAXVHdlaTVEMu3dLCD28YxwM2S4Q7sRhypB0",
+        "fileName": "logo.jpg"
+    },
+    "published": true,
+    "industries": [
+        "entertainment_and_media",
+        "education",
+        "digital_health",
+        "on-demand_services",
+        "automotive_and_transportation",
+        "impact",
+        "logistics",
+        "social_entrepreneurship",
+        "cybersecurity",
+        "retail",
+        "hospitality_and_travel",
+        "financial_and_insurance",
+        "e-commerce",
+        "travel"
+    ],
+    "publishChallenges": false
+}

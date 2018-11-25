@@ -16,8 +16,6 @@ class NewPoll extends Component {
       },
       choices: [{
         text: ''
-      }, {
-        text: ''
       }],
       pollLength: {
         days: 1,
@@ -62,7 +60,7 @@ class NewPoll extends Component {
 
     createPoll(pollData)
         .then(response => {
-          this.props.history.push("/");
+          this.props.history.push("/business/polls");
         }).catch(error => {
       if(error.status === 401) {
         this.props.handleLogout('/login', 'error', 'You have been logged out. Please login create poll.');
@@ -173,13 +171,13 @@ class NewPoll extends Component {
 
     return (
         <div className="new-poll-container">
-          <h1 className="page-title">Create Poll</h1>
+          <h1 className="page-title">Create Data Request</h1>
           <div className="new-poll-content">
             <Form onSubmit={this.handleSubmit} className="create-poll-form">
               <FormItem validateStatus={this.state.question.validateStatus}
                         help={this.state.question.errorMsg} className="poll-form-row">
                         <TextArea
-                            placeholder="Enter your question"
+                            placeholder="Enter your message"
                             style = {{ fontSize: '16px' }}
                             autosize={{ minRows: 3, maxRows: 6 }}
                             name = "question"
@@ -246,7 +244,7 @@ function PollChoice(props) {
       <FormItem validateStatus={props.choice.validateStatus}
                 help={props.choice.errorMsg} className="poll-form-row">
         <Input
-            placeholder = {'Choice ' + (props.choiceNumber + 1)}
+            placeholder = {'Field ' + (props.choiceNumber + 1)}
             size="large"
             value={props.choice.text}
             className={ props.choiceNumber > 1 ? "optional-choice": null}
@@ -257,7 +255,7 @@ function PollChoice(props) {
               <Icon
                   className="dynamic-delete-button"
                   type="close"
-                  disabled={props.choiceNumber <= 1}
+                  // disabled={props.choiceNumber <= 1}
                   onClick={() => props.removeChoice(props.choiceNumber)}
               /> ): null
         }

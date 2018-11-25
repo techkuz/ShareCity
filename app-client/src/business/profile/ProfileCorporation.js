@@ -100,7 +100,7 @@ class ProfileCorporation extends Component {
                           size="large"
                           className="profile-tabs">
 
-                      {this.state.user && this.state.user.roleName === 'ROLE_CORPORATE' ? (
+                      {this.state.user && this.state.user.roleName === 'ROLE_BUSINESS' ? (
                             <TabPane tab={`${this.state.user.pollCount} Requests`} key="1">
                             <PollList username={this.props.match.params.username} type="USER_CREATED_POLLS" />
                             </TabPane>) : null}

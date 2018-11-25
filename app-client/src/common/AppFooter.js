@@ -15,9 +15,9 @@ class AppFooter extends Component {
         return (
             <Footer className="app-footer">
                 <div className="container">
-                    <p className="copyright">
-                        2018 made with love from Innopolis
-                    </p>
+                    {/*<p className="copyright">*/}
+                        {/*2018 made with love from Innopolis*/}
+                    {/*</p>*/}
                 </div>
             </Footer>
         );

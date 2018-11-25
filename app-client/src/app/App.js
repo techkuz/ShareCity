@@ -101,11 +101,11 @@ class App extends Component {
         });
         await this.loadCurrentUser().then(() => {
         console.log(this.state.currentUser);
-        if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_CORPORATE') {
-            this.props.history.push("/business/polls");
-        } else if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_STARTUP') {
+        // if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_BUSINESS') {
+        //     this.props.history.push("/business/polls");
+        // } else if (this.state.currentUser && this.state.currentUser.roleName === 'ROLE_USER') {
             this.props.history.push(`/users/${this.state.currentUser.username}`);
-        }
+        // }
         });
     }
 
@@ -133,7 +133,7 @@ class App extends Component {
                             </Route>
                             <Route path="/signup" component={Signup}>
                             </Route>
-                            <Route path="/test" component={NewRequest}>
+                            <Route path="/test" component={NewPoll}>
                             </Route>
                             <Route path="/business/login"
                                    render={(props) => <LoginCorporation onLogin={this.handleLogin} {...props} />}>

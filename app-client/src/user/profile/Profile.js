@@ -9,7 +9,7 @@ import './Profile.css';
 import NotFound from '../../common/NotFound';
 import ServerError from '../../common/ServerError';
 import { store }from '../../index';
-import { INFO } from './startups';
+import { st, co } from './startups';
 import { Skeleton, Switch, Card, Icon} from 'antd';
 import { Badge } from 'antd';
 import { Drawer, List, Avatar, Divider, Col, Row } from 'antd';
@@ -49,9 +49,6 @@ const DescriptionItem = ({ title, content }) => (
 );
 
 
-
-let info = INFO;
-
 class Profile extends Component {
   constructor(props) {
     super(props);
@@ -88,7 +85,7 @@ class Profile extends Component {
           this.setState({
             user: response,
             isLoading: false,
-            info: info
+            info: (response.roleName === 'ROLE_BUSINESS') ? co : st
           });
         }).catch(error => {
       if(error.status === 404) {
@@ -151,10 +148,11 @@ class Profile extends Component {
                         {/*Joined {formatDate(this.state.user.joinedAt)}*/}
                       {/*</div>*/}
                     {/*</div>*/}
-                      <a href="#" style={{position: 'absolute', zIndex: 999}}>
+                      {this.state.user.roleName === 'ROLE_USER' ? (
+                      <a href="/business/polls" style={{position: 'absolute', zIndex: 999}}>
                           <Badge count={99} overflowCount={99} showZero={false} >
                           </Badge>
-                      </a>
+                      </a>) : null}
                     <CardV info={this.state.info} showDrawer={this.showDrawer}/>
                   </div>
                   <div className="user-poll-details">
@@ -163,9 +161,16 @@ class Profile extends Component {
                           tabBarStyle={tabBarStyle}
                           size="large"
                           className="profile-tabs">
-                        {this.state.user && this.state.user.roleName === 'ROLE_STARTUP' ? (
+                        {console.log(this.state.user.roleName)}
+                        {this.state.user.roleName === 'ROLE_USER' ? (
                             <TabPane tab={`${this.state.user.voteCount} Shares`}  key="1">
                                 <PollList username={this.props.match.params.username} type="USER_VOTED_POLLS" />
+                            </TabPane>) : null}
+
+                        {this.state.user.roleName === 'ROLE_BUSINESS' ? (
+                            <TabPane tab={`Requests`} key="1">
+                            <PollList isAuthenticated={this.state.isAuthenticated}
+                            currentUser={this.state.user}/>
                             </TabPane>) : null}
                     </Tabs>
                   </div>
