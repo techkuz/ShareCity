@@ -230,7 +230,7 @@ class NewPoll extends Component {
                         htmlType="submit"
                         size="large"
                         disabled={this.isFormInvalid()}
-                        className="create-poll-form-button">Create Poll</Button>
+                        className="create-poll-form-button">Create Request</Button>
               </FormItem>
             </Form>
           </div>
