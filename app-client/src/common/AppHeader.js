@@ -34,7 +34,7 @@ class AppHeader extends Component {
         if(this.props.currentUser.roleName === "ROLE_USER") {
             menuItems = [
                 <Menu.Item selectable="false" className="profile-menu">
-                    <span>{(this.props.currentUser.account) ? this.props.currentUser.account : '0.00'} BTM</span>
+                    <span>{(this.props.currentUser.balance) ? this.props.currentUser.balance : '0.00'} BTM</span>
                 </Menu.Item>,
                 <Menu.Item key="/profile" className="profile-menu">
                     <ProfileDropdownMenu
@@ -50,7 +50,7 @@ class AppHeader extends Component {
                     </Link>
                 </Menu.Item>,
                 <Menu.Item key="/profile" className="profile-menu">
-                    <ProfileDropdownMenu
+                        <ProfileDropdownMenu
                         currentUser={this.props.currentUser}
                         handleMenuClick={this.handleMenuClick}/>
                 </Menu.Item>
