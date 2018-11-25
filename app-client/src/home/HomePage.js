@@ -14,14 +14,12 @@ class HomePage extends Component {
             return (
                 <div className="home-page-wrapper page1">
                     <h2>Extend your business opportunities. Join the digital nation</h2>
-                    <p>Extend your business opportunities. Join the digital nation</p>
                 </div>
             );
         } else if (this.props.current === "Corporation") {
             return (
                 <div className="home-page-wrapper page1">
                     <h2>Find new startups that fit you best. Safe and sound.</h2>
-                    <p>Find new startups that fit you best. Safe and sound.</p>
                 </div>
             );
         }

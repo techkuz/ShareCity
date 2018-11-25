@@ -1,3 +1,5 @@
+package com.hack.junction.bytom.util;
+
 import io.bytom.api.*;
 import io.bytom.common.*;
 import io.bytom.http.*;
@@ -12,27 +14,9 @@ import org.apache.commons.codec.binary.Base64;
 
 import org.json.*;
 
-class Main {
-  public static void main(String[] argv) {
-    System.out.println("Generating client");
-    try {
-      processTransaction(
-            Configuration.getValue("security.mainxpub"),
-            Configuration.getValue("escrow.sender.id"),
-            Configuration.getValue("escrow.sender.program"),
-            Configuration.getValue("escrow.receiver.program"),
-            Configuration.getValue("escrow.receiver.address"),
-            10000
-        );
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    System.out.println("Exiting");
-  }
-
+public class BytomUtils {
   public static void testUserCreating() throws BytomException {
-    Client client = Client.generateClient();
-    Map<String, String> res = createNewKeyAndUser(client, "test3", "qwerty");
+    Map<String, String> res = createNewKeyAndUser("test3", "qwerty");
     System.out.println(res.toString());
   }
 
@@ -298,26 +282,31 @@ class Main {
     Transaction.SubmitResponse txs = Transaction.submit(client, signer);
   }
 
-  public static Map<String, String> createNewKeyAndUser(Client client, String alias, String password) throws BytomException {
+  public static Map<String, String> createNewKeyAndUser(String alias, String password) {
     Map<String, String> result = new HashMap<>();
-    Key.Builder keyBuilder = new Key.Builder().setAlias(alias).setPassword(password);
-    Key key = Key.create(client, keyBuilder);
-    result.put("xpub", key.xpub);
+    try {
+      Client client = Client.generateClient();
+      Key.Builder keyBuilder = new Key.Builder().setAlias(alias).setPassword(password);
+      Key key = Key.create(client, keyBuilder);
+      result.put("xpub", key.xpub);
 
-    List<String> rootXpubs = new ArrayList<>();
-    rootXpubs.add(key.xpub);
+      List<String> rootXpubs = new ArrayList<>();
+      rootXpubs.add(key.xpub);
 
-    Account.Builder accBuilder = new Account.Builder().setAlias(alias).setQuorum(1).setRootXpub(rootXpubs);
-    Account acc = Account.create(client, accBuilder);
-    result.put("id", acc.id);
+      Account.Builder accBuilder = new Account.Builder().setAlias(alias).setQuorum(1).setRootXpub(rootXpubs);
+      Account acc = Account.create(client, accBuilder);
+      result.put("id", acc.id);
 
-    Account.ReceiverBuilder receiverBuilder = new Account.ReceiverBuilder().setAccountAlias(alias).setAccountId(acc.id);
-    Receiver receiver = receiverBuilder.create(client);
+      Account.ReceiverBuilder receiverBuilder = new Account.ReceiverBuilder().setAccountAlias(alias).setAccountId(acc.id);
+      Receiver receiver = receiverBuilder.create(client);
 
-    result.put("address", receiver.address);
-    result.put("control_program", receiver.controlProgram);
-
-    return result;
+      result.put("address", receiver.address);
+      result.put("control_program", receiver.controlProgram);
+    } catch (BytomException e) {
+      e.printStackTrace();
+    } finally {
+      return result;
+    }
   }
 
   public static Map<String, Receiver> getEscrowTestAccounts(Client client) throws BytomException {
