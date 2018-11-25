@@ -108,7 +108,7 @@ class Poll extends Component {
           <div className="poll-footer">
             {
               !(this.props.poll.selectedChoice || this.props.poll.expired) ?
-                  (<Button className="vote-button" disabled={!this.props.currentVote} onClick={this.props.handleVoteSubmit}>Vote</Button>) : null
+                  (<Button className="vote-button" disabled={!this.props.currentVote} onClick={this.props.handleVoteSubmit}>Share</Button>) : null
             }
             <span className="total-votes">{this.props.poll.totalVotes} votes</span>
             <span className="separator">•</span>
