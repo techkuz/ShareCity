@@ -8,6 +8,8 @@ import { POLL_LIST_SIZE } from '../constants';
 import { withRouter } from 'react-router-dom';
 import './PollList.css';
 
+import { message } from 'antd';
+
 class PollList extends Component {
   constructor(props) {
     super(props);
@@ -24,6 +26,10 @@ class PollList extends Component {
     this.loadPollList = this.loadPollList.bind(this);
     this.handleLoadMore = this.handleLoadMore.bind(this);
   }
+
+  info = () => {
+        message.info('Hooray! +0.9 BTM');
+    };
 
   loadPollList(page = 0, size = POLL_LIST_SIZE) {
     let promise;
@@ -128,6 +134,7 @@ class PollList extends Component {
           this.setState({
             polls: polls
           });
+          this.info();
         }).catch(error => {
       if(error.status === 401) {
         this.props.handleLogout('/login', 'error', 'You have been logged out. Please login to vote');
