@@ -11,6 +11,7 @@ import com.hack.junction.bytom.payload.SignUpRequest;
 import com.hack.junction.bytom.repository.RoleRepository;
 import com.hack.junction.bytom.repository.UserRepository;
 import com.hack.junction.bytom.security.JwtTokenProvider;
+import com.hack.junction.bytom.util.BytomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Collections;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -75,9 +77,14 @@ public class AuthController {
                     HttpStatus.BAD_REQUEST);
         }
 
+        Map<String, String> bytomData = BytomUtils.createNewKeyAndUser(signUpRequest.getUsername(), signUpRequest.getPassword());
+
         // Creating user's account
         User user = new User(signUpRequest.getName(), signUpRequest.getUsername(),
                 signUpRequest.getEmail(), signUpRequest.getPassword());
+
+        user.setBytomId(bytomData.get("id"));
+        user.setBytomAddress(bytomData.get("address"));
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
